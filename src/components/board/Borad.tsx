@@ -1,27 +1,29 @@
+import { Position } from "../../types"
 import { Square } from "../square/Square"
 import './Board.css'
+
+const SQUARES_POSITIONS: Position[][] = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+]
+
+const renderSquare = (position: Position) => {
+  return <Square key={`${position}`} position={position} />
+}
+
+const renderColumn = (column: Position[], index: number) => {
+  return (
+    <div key={`${index}`} className='Column'>
+      {column.map(renderSquare)}
+    </div>
+  )
+}
 
 export const Board = () => {
   return (
     <div className='Board'>
-      <div className='Column'>
-        <Square position={1} />
-        <Square position={2} />
-        <Square position={3} />
-      </div>
-
-      <div className='Column'>
-        <Square position={4} />
-        <Square position={5} />
-        <Square position={6} />
-      </div>
-
-      <div className='Column'>
-        <Square position={7} />
-        <Square position={8} />
-        <Square position={9} />
-      </div>
-
+      {SQUARES_POSITIONS.map(renderColumn)}
     </div>
   )
 }
