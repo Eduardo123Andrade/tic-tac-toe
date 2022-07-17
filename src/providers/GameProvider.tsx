@@ -1,6 +1,5 @@
-import React, { createContext, useEffect, useState } from 'react'
+import React, { createContext, useCallback, useEffect, useState } from 'react'
 import { Position, SquareValue } from '../types'
-
 
 
 type GameProviderProps = {
@@ -27,6 +26,7 @@ type GameProviderData = [
 ]
 
 const MINIMUM_NUMBER_OF_SQUARES_TO_FINISH_THE_GAME = 5
+const NUMBER_OF_SQUARES_WITH_SAME_VALUE_TO_FINISH_THE_GAME = 3
 
 export const GameContext = createContext<GameProviderData | null>(null)
 
@@ -39,97 +39,76 @@ export const GameProvider: React.FC<GameProviderProps> = ({
   const [selectedSquares, setSelectedSquares] = useState(new Array(9).fill(undefined))
   const [winner, setWinner] = useState<Winner>()
 
-  useEffect(() => {
-    changeCurrentSquareValue()
+
+  const changeCurrentSquareValue = useCallback(() => {
+    if (currentTurn % 2 === 0)
+      return setCurrentSquareValue(SquareValue.O)
+
+    setCurrentSquareValue(SquareValue.X)
   }, [currentTurn])
 
-
   useEffect(() => {
-    console.log({
-      isRunning,
-      selectedSquares,
-    })
-  }, [isRunning, selectedSquares])
+    changeCurrentSquareValue()
+  }, [changeCurrentSquareValue])
 
+
+  const finishGame = useCallback((winnerValue: SquareValue) => {
+    stopGame()
+    defineWinner(winnerValue)
+  }, [])
+
+  const verifyGameOver = useCallback((indexers: number[]) => {
+    const filteredList = selectedSquares
+      .filter((value, index) => indexers.includes(index) && value)
+
+    if (
+      filteredList.length <
+      NUMBER_OF_SQUARES_WITH_SAME_VALUE_TO_FINISH_THE_GAME)
+      return false
+
+    const gameOver = filteredList
+      .every((value, _, array) => value === array[0])
+
+    return gameOver
+
+  }, [selectedSquares])
 
   useEffect(() => {
     const quantityOfSelectedSquares = selectedSquares.filter(square => square).length
     if (quantityOfSelectedSquares >= MINIMUM_NUMBER_OF_SQUARES_TO_FINISH_THE_GAME) {
 
-      if (
-        !!selectedSquares[0]
-        && selectedSquares[0] === selectedSquares[1]
-        && selectedSquares[0] === selectedSquares[2]
-      )
+      if (verifyGameOver([0, 1, 2]))
         return finishGame(selectedSquares[0])
 
-      if (
-        !!selectedSquares[3]
-        && selectedSquares[3] === selectedSquares[4]
-        && selectedSquares[3] === selectedSquares[5]
-      )
+      if (verifyGameOver([3, 4, 5]))
         return finishGame(selectedSquares[3])
 
-      if (
-        !!selectedSquares[6]
-        && selectedSquares[6] === selectedSquares[7]
-        && selectedSquares[6] === selectedSquares[8]
-      )
+      if (verifyGameOver([6, 7, 8]))
         return finishGame(selectedSquares[6])
 
-      if (
-        !!selectedSquares[0]
-        && selectedSquares[0] === selectedSquares[3]
-        && selectedSquares[0] === selectedSquares[6]
-      )
+      if (verifyGameOver([0, 3, 6]))
         return finishGame(selectedSquares[0])
 
-      if (
-        !!selectedSquares[1]
-        && selectedSquares[1] === selectedSquares[4]
-        && selectedSquares[1] === selectedSquares[7]
-      )
+      if (verifyGameOver([1, 4, 7]))
         return finishGame(selectedSquares[1])
 
-      if (
-        !!selectedSquares[2]
-        && selectedSquares[2] === selectedSquares[5]
-        && selectedSquares[2] === selectedSquares[8]
-      )
+      if (verifyGameOver([2, 5, 8]))
         return finishGame(selectedSquares[2])
 
-      if (
-        !!selectedSquares[0]
-        && selectedSquares[0] === selectedSquares[4]
-        && selectedSquares[0] === selectedSquares[8]
-      )
+      if (verifyGameOver([0, 4, 8]))
         return finishGame(selectedSquares[0])
 
-      if (
-        !!selectedSquares[2]
-        && selectedSquares[2] === selectedSquares[4]
-        && selectedSquares[2] === selectedSquares[6]
-      )
+      if (verifyGameOver([2, 4, 6]))
         return finishGame(selectedSquares[2])
     }
 
-  }, [selectedSquares])
+  }, [selectedSquares, finishGame, verifyGameOver])
 
-  const finishGame = (winnerValue: SquareValue) => {
-    stopGame()
-    defineWinner(winnerValue)
-  }
 
 
   const stopGame = () => setIsRunning(false)
   const defineWinner = (winnerValue: SquareValue) => setWinner(winnerValue)
 
-  const changeCurrentSquareValue = () => {
-    if (currentTurn % 2 === 0)
-      return setCurrentSquareValue(SquareValue.O)
-
-    setCurrentSquareValue(SquareValue.X)
-  }
 
   const addUserSelectedSquare = (position: Position) => {
     const selectedSquaresAux = [...selectedSquares]
