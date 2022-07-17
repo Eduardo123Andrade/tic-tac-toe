@@ -6,4 +6,6 @@
   width: 50px;
   margin: 10px;
   background: coral;
+  cursor: default;
+  user-select: none;
 }

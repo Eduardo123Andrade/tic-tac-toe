@@ -1,23 +1,27 @@
 import React, { useState } from 'react'
+import { useGame } from '../../hooks'
 import { SquareValue } from '../../types'
 import './Square.css'
 
 
 type SquareProps = {
-    position: number
-    value?: SquareValue
+	position: number
 }
 
 export const Square: React.FC<SquareProps> = ({ position }) => {
-    const [currentValue, setValue] = useState('')
+	const [value, setValue] = useState<SquareValue>()
+	const [{ currentSquareValue }, { onNextTurn }] = useGame()
 
-    const onPress = () => {
-        setValue(SquareValue.X)
-    }
+	const onPress = () => {
+		if (!value) {
+			setValue(currentSquareValue)
+			onNextTurn()
+		}
+	}
 
-    return (
-        <div className='Square' onClick={onPress}>
-            {currentValue}
-        </div>
-    )
+	return (
+		<div className='Square' onClick={onPress}>
+			{value}
+		</div>
+	)
 }
