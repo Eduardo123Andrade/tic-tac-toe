@@ -28,6 +28,20 @@ type GameProviderData = [
 const MINIMUM_NUMBER_OF_SQUARES_TO_FINISH_THE_GAME = 5
 const NUMBER_OF_SQUARES_WITH_SAME_VALUE_TO_FINISH_THE_GAME = 3
 
+const ENDGAME_INDEX_SET = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+
+  [0, 4, 8],
+  [2, 4, 6],
+]
+
+
 export const GameContext = createContext<GameProviderData | null>(null)
 
 export const GameProvider: React.FC<GameProviderProps> = ({
@@ -52,7 +66,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({
   }, [changeCurrentSquareValue])
 
 
-  const finishGame = useCallback((winnerValue: SquareValue) => {
+  const finishGame = useCallback((winnerValue?: Winner) => {
     stopGame()
     defineWinner(winnerValue)
   }, [])
@@ -75,31 +89,19 @@ export const GameProvider: React.FC<GameProviderProps> = ({
 
   useEffect(() => {
     const quantityOfSelectedSquares = selectedSquares.filter(square => square).length
+
     if (quantityOfSelectedSquares >= MINIMUM_NUMBER_OF_SQUARES_TO_FINISH_THE_GAME) {
+      const setIndexes = ENDGAME_INDEX_SET.find(verifyGameOver)
 
-      if (verifyGameOver([0, 1, 2]))
-        return finishGame(selectedSquares[0])
+      if (!setIndexes && quantityOfSelectedSquares === selectedSquares.length)
+        return finishGame()
 
-      if (verifyGameOver([3, 4, 5]))
-        return finishGame(selectedSquares[3])
+      if (setIndexes) {
+        const [firstIndex] = setIndexes
+        const squareValue = selectedSquares[firstIndex]
+        return finishGame(squareValue)
+      }
 
-      if (verifyGameOver([6, 7, 8]))
-        return finishGame(selectedSquares[6])
-
-      if (verifyGameOver([0, 3, 6]))
-        return finishGame(selectedSquares[0])
-
-      if (verifyGameOver([1, 4, 7]))
-        return finishGame(selectedSquares[1])
-
-      if (verifyGameOver([2, 5, 8]))
-        return finishGame(selectedSquares[2])
-
-      if (verifyGameOver([0, 4, 8]))
-        return finishGame(selectedSquares[0])
-
-      if (verifyGameOver([2, 4, 6]))
-        return finishGame(selectedSquares[2])
     }
 
   }, [selectedSquares, finishGame, verifyGameOver])
@@ -107,7 +109,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({
 
 
   const stopGame = () => setIsRunning(false)
-  const defineWinner = (winnerValue: SquareValue) => setWinner(winnerValue)
+  const defineWinner = (winnerValue: Winner) => setWinner(winnerValue)
 
 
   const addUserSelectedSquare = (position: Position) => {
