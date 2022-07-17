@@ -28,7 +28,7 @@ type GameProviderData = [
 const MINIMUM_NUMBER_OF_SQUARES_TO_FINISH_THE_GAME = 5
 const NUMBER_OF_SQUARES_WITH_SAME_VALUE_TO_FINISH_THE_GAME = 3
 
-const ENDGAME_INDEX_SET = [
+const ENDGAME_INDEX_SET: Position[][] = [
   [0, 1, 2],
   [3, 4, 5],
   [6, 7, 8],
@@ -106,8 +106,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({
 
   const addUserSelectedSquare = (position: Position) => {
     const selectedSquaresAux = [...selectedSquares]
-    const index = position - 1
-    selectedSquaresAux[index] = currentSquareValue
+    selectedSquaresAux[position] = currentSquareValue
 
     setSelectedSquares(selectedSquaresAux)
   }
