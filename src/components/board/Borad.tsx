@@ -8,22 +8,19 @@ const SQUARES_POSITIONS: Position[][] = [
   [6, 7, 8],
 ]
 
-const renderSquare = (position: Position) => {
-  return <Square key={`${position}`} position={position} />
-}
+const renderSquare = (position: Position) =>
+  <Square key={`${position}`} position={position} />
 
-const renderColumn = (column: Position[], index: number) => {
-  return (
-    <div key={`${index}`} className='Column'>
-      {column.map(renderSquare)}
-    </div>
-  )
-}
 
-export const Board = () => {
-  return (
-    <div className='Board'>
-      {SQUARES_POSITIONS.map(renderColumn)}
-    </div>
-  )
-}
+const renderColumn = (column: Position[], index: number) => (
+  <div key={`${index}`} className='Column'>
+    {column.map(renderSquare)}
+  </div>
+)
+
+
+export const Board = () => (
+  <div className='Board'>
+    {SQUARES_POSITIONS.map(renderColumn)}
+  </div>
+)
