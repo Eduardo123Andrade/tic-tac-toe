@@ -1,0 +1,15 @@
+.Board {
+  /* display: flex; */
+  /* flex-direction: row; */
+  /* background-color: crimson;
+  padding: 10px;
+  height: 200px; */
+}
+
+.Column {
+  display: flex;
+  flex-direction: row;
+   background-color: crimson; 
+  /* padding: 10px; */
+  /* height: 200px; */
+}
