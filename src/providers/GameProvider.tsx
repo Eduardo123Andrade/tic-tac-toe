@@ -41,7 +41,6 @@ const ENDGAME_INDEX_SET = [
   [2, 4, 6],
 ]
 
-
 export const GameContext = createContext<GameProviderData | null>(null)
 
 export const GameProvider: React.FC<GameProviderProps> = ({
@@ -75,9 +74,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({
     const filteredList = selectedSquares
       .filter((value, index) => indexers.includes(index) && value)
 
-    if (
-      filteredList.length <
-      NUMBER_OF_SQUARES_WITH_SAME_VALUE_TO_FINISH_THE_GAME)
+    if (filteredList.length < NUMBER_OF_SQUARES_WITH_SAME_VALUE_TO_FINISH_THE_GAME)
       return false
 
     const gameOver = filteredList
@@ -86,6 +83,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({
     return gameOver
 
   }, [selectedSquares])
+
 
   useEffect(() => {
     const quantityOfSelectedSquares = selectedSquares.filter(square => square).length
@@ -106,23 +104,19 @@ export const GameProvider: React.FC<GameProviderProps> = ({
 
   }, [selectedSquares, finishGame, verifyGameOver])
 
-
-
-  const stopGame = () => setIsRunning(false)
-  const defineWinner = (winnerValue: Winner) => setWinner(winnerValue)
-
-
   const addUserSelectedSquare = (position: Position) => {
     const selectedSquaresAux = [...selectedSquares]
     const index = position - 1
-    selectedSquaresAux[index] = currentSquareValue.toString()
+    selectedSquaresAux[index] = currentSquareValue
 
     setSelectedSquares(selectedSquaresAux)
   }
 
-  const onNextTurn = () => {
-    setCurrentTurn(prevValue => ++prevValue)
-  }
+  const stopGame = () => setIsRunning(false)
+
+  const defineWinner = (winnerValue: Winner) => setWinner(winnerValue)
+
+  const onNextTurn = () => setCurrentTurn(prevValue => ++prevValue)
 
   return (
     <GameContext.Provider
